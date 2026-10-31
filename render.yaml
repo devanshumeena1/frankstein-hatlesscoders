@@ -6,8 +6,8 @@ services:
     region: oregon
     plan: free
     rootDir: phoenix-backend
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
+    buildCommand: yarn && yarn build
+    startCommand: yarn start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -28,8 +28,8 @@ services:
     region: oregon
     plan: free
     rootDir: phoenix-frontend
-    buildCommand: npm ci && npm run build
-    startCommand: npm start
+    buildCommand: yarn && yarn build
+    startCommand: yarn start
     envVars:
       - key: NODE_ENV
         value: production
