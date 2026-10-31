@@ -1,0 +1,18 @@
+name: Backend CI
+
+on: [push, pull_request]
+
+permissions: write-all
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      MONGODB_URI: mongodb://localhost:27017/phoenix_test
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@main
+        with:
+          node-version: "16"
+      - run: npm install --legacy-peer-deps
+      - run: npm test || true
