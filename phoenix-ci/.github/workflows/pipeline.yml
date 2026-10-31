@@ -39,7 +39,7 @@ jobs:
       - run: npm test
         env:
           MONGODB_URI: mongodb://localhost:27017/phoenix_test
-          JWT_SECRET: ci-only-secret-that-is-at-least-32-bytes-long
+          JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
 
   frontend:
     runs-on: ubuntu-latest
@@ -59,6 +59,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build
+      - run: npm test
 
   e2e:
     runs-on: ubuntu-latest
@@ -77,11 +78,10 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-backend-${{ hashFiles('phoenix-backend/package-lock.json') }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-frontend-${{ hashFiles('phoenix-frontend/package-lock.json') }}
+          restore-keys: |
+            npm-backend-
+            npm-frontend-
+          key: npm-e2e-${{ hashFiles('phoenix-backend/package-lock.json', 'phoenix-frontend/package-lock.json') }}
       - name: Install backend
         working-directory: phoenix-backend
         run: npm ci
@@ -93,21 +93,26 @@ jobs:
         run: npm run seed
         env:
           MONGODB_URI: mongodb://localhost:27017/phoenix_e2e
-          JWT_SECRET: ci-only-secret-that-is-at-least-32-bytes-long
+          JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
       - name: Start backend
         working-directory: phoenix-backend
         run: npm start &
         env:
           MONGODB_URI: mongodb://localhost:27017/phoenix_e2e
-          JWT_SECRET: ci-only-secret-that-is-at-least-32-bytes-long
+          JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
           CORS_ORIGINS: http://localhost:3000
           PORT: 8000
       - name: Install frontend
         working-directory: phoenix-frontend
         run: npm ci
+      - name: Build frontend
+        working-directory: phoenix-frontend
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
       - name: Start frontend
         working-directory: phoenix-frontend
-        run: npm run dev &
+        run: npm start &
         env:
           NEXT_PUBLIC_API_URL: http://localhost:8000
       - name: Wait for backend

@@ -2,7 +2,9 @@ name: Backend CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
@@ -34,4 +36,4 @@ jobs:
       - run: npm test
         env:
           MONGODB_URI: mongodb://localhost:27017/phoenix_test
-          JWT_SECRET: ci-only-secret-that-is-at-least-32-bytes-long
+          JWT_SECRET: ${{ secrets.CI_JWT_SECRET || 'ci-only-secret-that-is-at-least-32-bytes-long' }}
