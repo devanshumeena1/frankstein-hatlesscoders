@@ -78,12 +78,14 @@ async function main() {
   await disconnectDb();
 }
 
-main()
-  .then(() => {
-    console.log("seed: done");
-    process.exit(0);
-  })
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
+if (require.main === module) {
+  main()
+    .then(() => {
+      console.log("seed: done");
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}

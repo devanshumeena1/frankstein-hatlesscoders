@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { RequireAuth } from "@/components/RequireAuth";
 import { api, describeError } from "@/lib/api";
+import { clearCache } from "@/lib/cache";
 import type { Workspace } from "@/lib/types";
 
 function WorkspaceList() {
@@ -29,6 +30,7 @@ function WorkspaceList() {
     try {
       await api("/api/workspaces", { method: "POST", body: { name } });
       setName("");
+      clearCache();
       await load();
     } catch (err) {
       setError(describeError(err));

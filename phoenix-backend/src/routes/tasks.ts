@@ -5,7 +5,7 @@ import { currentUser, getProjectForUser, requireUser } from "../lib/auth";
 import { asyncHandler, escapeRegex, HttpError, parseBody, parseId } from "../lib/http";
 import { TaskIn, TaskQuery } from "../lib/schemas";
 import { taskOut } from "../lib/serialize";
-import { CreditLedger, Project, Task, Workspace, WorkspaceMember } from "../models";
+import { CreditLedger, Task, Workspace, WorkspaceMember } from "../models";
 
 export const tasksRouter = Router();
 
@@ -13,8 +13,9 @@ tasksRouter.get(
   "/api/projects/:projectId/tasks",
   requireUser,
   asyncHandler(async (req, res) => {
+    const user = currentUser(res.locals);
     const projectId = parseId(req.params.projectId, "Project");
-    if (!(await Project.exists({ _id: projectId }))) throw new HttpError(404, "Project not found");
+    await getProjectForUser(projectId, user);
     const query = parseBody(TaskQuery, req.query);
 
     const filter: FilterQuery<unknown> = { project: projectId };

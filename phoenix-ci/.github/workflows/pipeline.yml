@@ -124,7 +124,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install --global vercel@32
       - name: Deploy backend
-        run: vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }}
+        run: vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --build-env APP_VERSION=${{ github.sha }}
         working-directory: phoenix-backend
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -145,4 +145,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Smoke test production
-        run: bash phoenix-ci/scripts/smoke.sh ${{ vars.BACKEND_URL }} ${{ vars.FRONTEND_URL }}
+        run: bash phoenix-ci/scripts/smoke.sh ${{ vars.BACKEND_URL }} ${{ vars.FRONTEND_URL }} ${{ github.sha }}

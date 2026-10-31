@@ -27,8 +27,8 @@ export const ProjectIn = z.object({
 });
 
 export const TaskIn = z.object({
-  title: z.string().max(200),
-  status: z.string().default("todo"),
+  title: z.string().trim().min(1).max(200),
+  status: z.enum(TASK_STATUSES).default("todo"),
   assignee_id: objectId.nullable().default(null),
 });
 

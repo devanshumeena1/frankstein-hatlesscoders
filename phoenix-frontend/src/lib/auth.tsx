@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { api, getToken, setToken } from "./api";
+import { clearCache } from "./cache";
 import type { TokenResponse, User } from "./types";
 
 interface AuthState {
@@ -40,11 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       method: "POST",
       body: { email, password },
     });
+    clearCache();
     setToken(res.access_token);
     setUser(res.user);
   }, []);
 
   const logout = useCallback(() => {
+    clearCache();
     setToken(null);
     setUser(null);
   }, []);

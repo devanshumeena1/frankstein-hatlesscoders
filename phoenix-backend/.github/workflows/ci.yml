@@ -1,18 +1,39 @@
 name: Backend CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
-permissions: write-all
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      MONGODB_URI: mongodb://localhost:27017/phoenix_test
+    timeout-minutes: 15
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
+    defaults:
+      run:
+        working-directory: phoenix-backend
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@main
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "16"
-      - run: npm install --legacy-peer-deps
-      - run: npm test || true
+          node-version: "20"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-backend-${{ hashFiles('phoenix-backend/package-lock.json') }}
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+        env:
+          MONGODB_URI: mongodb://localhost:27017/phoenix_test
+          JWT_SECRET: ci-only-secret-that-is-at-least-32-bytes-long
