@@ -1,0 +1,39 @@
+services:
+  # ── Backend (Express + MongoDB) ──────────────────────────────────────────────
+  - type: web
+    name: phoenix-backend
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: phoenix-backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      - key: MONGODB_URI
+        sync: false          # Set this in the Render dashboard
+      - key: JWT_SECRET
+        sync: false          # Set this in the Render dashboard
+      - key: CORS_ORIGINS
+        sync: false          # Set to your frontend URL after it is deployed
+
+  # ── Frontend (Next.js) ──────────────────────────────────────────────────────
+  - type: web
+    name: phoenix-frontend
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: phoenix-frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        sync: false          # Set to your backend Render URL after it is deployed
