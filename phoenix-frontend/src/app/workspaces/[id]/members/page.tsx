@@ -64,7 +64,7 @@ function Members({ id }: { id: string }) {
           </li>
         ))}
       </ul>
-      {(
+      {(workspace.role === "owner" || workspace.role === "admin") && (
         <form onSubmit={add} className="row">
           <input
             placeholder="user@example.com"

@@ -74,15 +74,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-backend-${{ hashFiles('phoenix-backend/package-lock.json') }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-frontend-${{ hashFiles('phoenix-frontend/package-lock.json') }}
       - name: Install backend
         working-directory: phoenix-backend
         run: npm ci
       - name: Build backend
         working-directory: phoenix-backend
         run: npm run build
-        env:
-          MONGODB_URI: mongodb://localhost:27017/phoenix_e2e
-          JWT_SECRET: ci-only-secret-that-is-at-least-32-bytes-long
       - name: Seed database
         working-directory: phoenix-backend
         run: npm run seed
@@ -124,7 +129,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm install --global vercel@32
       - name: Deploy backend
-        run: vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --build-env APP_VERSION=${{ github.sha }}
+        run: vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --env APP_VERSION=${{ github.sha }}
         working-directory: phoenix-backend
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

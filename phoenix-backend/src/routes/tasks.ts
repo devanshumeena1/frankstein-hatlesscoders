@@ -3,7 +3,7 @@ import type { FilterQuery } from "mongoose";
 import { getSettings } from "../config";
 import { currentUser, getProjectForUser, requireUser } from "../lib/auth";
 import { asyncHandler, escapeRegex, HttpError, parseBody, parseId } from "../lib/http";
-import { TaskIn, TaskQuery } from "../lib/schemas";
+import { TaskIn, TaskPatch, TaskQuery } from "../lib/schemas";
 import { taskOut } from "../lib/serialize";
 import { CreditLedger, Task, Workspace, WorkspaceMember } from "../models";
 
@@ -81,5 +81,25 @@ tasksRouter.post(
       workspace: ws._id, delta: -cost, reason: `task ${task._id}`, task: task._id, idempotencyKey: key ?? undefined,
     });
     res.status(201).json(taskOut(task));
+  })
+);
+
+/** Update a task's title or status. */
+tasksRouter.patch(
+  "/api/projects/:projectId/tasks/:taskId",
+  requireUser,
+  asyncHandler(async (req, res) => {
+    const user = currentUser(res.locals);
+    const projectId = parseId(req.params.projectId, "Project");
+    await getProjectForUser(projectId, user);
+    const taskId = parseId(req.params.taskId, "Task");
+    const body = parseBody(TaskPatch, req.body);
+    const task = await Task.findOneAndUpdate(
+      { _id: taskId, project: projectId },
+      { $set: body },
+      { new: true }
+    ).lean();
+    if (!task) throw new HttpError(404, "Task not found");
+    res.json(taskOut(task));
   })
 );

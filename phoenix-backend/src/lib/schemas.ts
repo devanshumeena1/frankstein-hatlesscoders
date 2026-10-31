@@ -32,6 +32,12 @@ export const TaskIn = z.object({
   assignee_id: objectId.nullable().default(null),
 });
 
+export const TaskPatch = z.object({
+  title: z.string().trim().min(1).max(200).optional(),
+  status: z.enum(TASK_STATUSES).optional(),
+  assignee_id: objectId.nullable().optional(),
+}).refine((d) => Object.keys(d).length > 0, { message: "At least one field required" });
+
 export const TaskQuery = z.object({
   q: z.string().max(100).optional(),
   status: z.enum(TASK_STATUSES).optional(),
