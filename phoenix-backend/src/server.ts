@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { createApp } from "./app";
 import { getSettings } from "./config";
 import { connectDb, disconnectDb } from "./db";

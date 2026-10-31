@@ -1,6 +1,7 @@
 // Demo data.
 //   npm run seed          -> creates the demo data if it isn't there yet (safe to re-run)
 //   npm run seed:reset    -> wipes the Phoenix collections and seeds again
+import "dotenv/config";
 import { getSettings } from "../src/config";
 import { ALL_MODELS, connectDb, disconnectDb } from "../src/db";
 import { hashPassword } from "../src/lib/security";
