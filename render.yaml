@@ -8,7 +8,7 @@ services:
     rootDir: phoenix-backend
     buildCommand: yarn && yarn build
     startCommand: yarn start
-    healthCheckPath: /health
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
